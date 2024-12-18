@@ -1,10 +1,7 @@
 """
     Client for file sharing service
-    
-    Usage: python3 client.py 127.0.0.1 12000
-    
+    Usage: python3 client.py <SERVER_IP> <SERVER_PORT>
     coding: utf-8
-    
     Author: Danny Li
 """
 from socket import *

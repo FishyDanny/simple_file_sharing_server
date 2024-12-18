@@ -1,10 +1,7 @@
 """
     Multi-threaded server to share files built on python3
-    
-    Usage: python3 server.py 12000
-    
+    Usage: python3 server.py <PORT>
     coding: utf-8
-    
     Author: Danny Li
 """
 from socket import *
