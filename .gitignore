@@ -1,1 +1,46 @@
-__pycache__
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Database
+*.db
+server.db
+
+# SSL Certificates (NEVER commit these)
+*.crt
+*.key
+*.pem
+
+# Electron
+electron-app/node_modules/
+electron-app/dist/
+electron-app/dist-electron/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Sisyphus planning
+.sisyphus/drafts/

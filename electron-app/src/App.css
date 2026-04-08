@@ -1,0 +1,55 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #282c34;
+  color: white;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.status {
+  font-size: 0.9rem;
+  color: #61dafb;
+}
+
+.disconnect-btn {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.disconnect-btn:hover {
+  background: #ff6b7a;
+}
+
+.app-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.left-panel,
+.right-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.left-panel {
+  border-right: 1px solid #e0e0e0;
+}
