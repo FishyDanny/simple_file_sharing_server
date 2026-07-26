@@ -1,13 +1,23 @@
-# P2P DB Vault - Secure File Sharing Server
+# P2P DB Vault — asyncio File Sharing Server
 
-A modern, asyncio-based P2P file sharing server with SSL/TLS encryption and a React/Electron desktop client.
+A peer-to-peer file sharing system with an `asyncio` server, optional TLS, and a React/Electron
+desktop client. Originally a threaded UNSW networking assignment, rewritten as a non-blocking
+async server with a desktop GUI on top.
+
+![Python](https://img.shields.io/badge/python-3.7+-blue.svg)
+![asyncio](https://img.shields.io/badge/asyncio-non--blocking-green.svg)
+![Electron](https://img.shields.io/badge/Electron-React-47848F.svg?logo=electron&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+> Built to learn socket programming and async I/O. It is not a hardened system — the known
+> limitations are documented in [Security notes](#security-notes).
 
 ## Features
 
-- **AsyncIO Architecture**: High-performance async server using `asyncio` for non-blocking I/O
-- **SSL/TLS Encryption**: Encrypted communication between client and server
-- **Desktop GUI**: React/Electron desktop application with intuitive interface
-- **Authentication**: Secure username/password authentication
+- **AsyncIO Architecture**: non-blocking I/O server, alongside the original threaded implementation for comparison
+- **Optional TLS**: encrypted client↔server control channel when started with `--ssl`
+- **Desktop GUI**: React/Electron desktop application
+- **Authentication**: username/password login backed by SQLite
 - **File Publishing**: Share files across the network
 - **P2P File Transfer**: Direct peer-to-peer file downloads
 - **Active Peer Management**: Real-time peer tracking with heartbeat monitoring
@@ -21,8 +31,8 @@ simple_file_sharing_server/
 ├── server_async.py        # AsyncIO server (recommended)
 ├── client.py              # Original CLI client (legacy)
 ├── client_async.py        # AsyncIO CLI client
-├── credentials.txt        # User credentials (development)
-├── server.db              # SQLite database
+├── credentials.example.txt # Template dev accounts — copy to credentials.txt (gitignored)
+├── server.db              # SQLite database (gitignored)
 ├── scripts/
 │   └── generate_certs.sh  # SSL certificate generation
 ├── tests/
@@ -52,17 +62,29 @@ simple_file_sharing_server/
 ### Installation
 
 1. **Clone the repository:**
+
    ```bash
    git clone <repository-url>
    cd simple_file_sharing_server
    ```
 
-2. **Generate SSL certificates (optional, for HTTPS):**
+2. **Create a local credentials file:**
+
+   ```bash
+   cp credentials.example.txt credentials.txt
+   ```
+
+   `credentials.txt` is gitignored. The example file holds throwaway development accounts and is
+   seeded into the SQLite `users` table on first run — replace it with your own before doing
+   anything real. See [Security notes](#security-notes).
+
+3. **Generate SSL certificates (optional, for HTTPS):**
+
    ```bash
    bash scripts/generate_certs.sh
    ```
 
-3. **Install Electron dependencies (optional, for GUI):**
+4. **Install Electron dependencies (optional, for GUI):**
    ```bash
    cd electron-app
    npm install
@@ -73,11 +95,13 @@ simple_file_sharing_server/
 #### AsyncIO Server (Recommended)
 
 **Without SSL:**
+
 ```bash
 python3 server_async.py 12000
 ```
 
 **With SSL:**
+
 ```bash
 python3 server_async.py 12000 --ssl
 ```
@@ -93,11 +117,13 @@ python3 server.py 12000
 #### AsyncIO CLI Client
 
 **Without SSL:**
+
 ```bash
 python3 client_async.py 127.0.0.1 12000
 ```
 
 **With SSL:**
+
 ```bash
 python3 client_async.py 127.0.0.1 12000 --ssl
 ```
@@ -113,16 +139,16 @@ npm run dev
 
 ### Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `auth <username> <password>` | Authenticate with server |
-| `pub <filename>` | Publish a file for sharing |
-| `get <filename>` | Download a file from a peer |
-| `lap` | List active peers |
-| `lpf` | List your published files |
-| `sch <substring>` | Search for files |
-| `unp <filename>` | Unpublish a file |
-| `xit` | Disconnect and exit |
+| Command                      | Description                 |
+| ---------------------------- | --------------------------- |
+| `auth <username> <password>` | Authenticate with server    |
+| `pub <filename>`             | Publish a file for sharing  |
+| `get <filename>`             | Download a file from a peer |
+| `lap`                        | List active peers           |
+| `lpf`                        | List your published files   |
+| `sch <substring>`            | Search for files            |
+| `unp <filename>`             | Unpublish a file            |
+| `xit`                        | Disconnect and exit         |
 
 ### Example Session
 
@@ -162,6 +188,7 @@ pytest tests/test_baseline.py -v
 ### Test Coverage
 
 Tests cover:
+
 - Authentication (valid/invalid credentials, duplicate login)
 - File publishing and unpublishing
 - File searching
@@ -206,18 +233,21 @@ The desktop application uses:
 All commands are plain-text, space-delimited:
 
 #### Authentication
+
 ```
 Request:  auth <username> <password>
 Response: auth OK | auth ERR
 ```
 
 #### Port Registration
+
 ```
 Request:  port <upload_port>
 Response: port OK | port ERR
 ```
 
 #### File Operations
+
 ```
 Request:  pub <filename>
 Response: pub OK | pub ERR
@@ -233,6 +263,7 @@ Response: lpf <file1> <file2> ... | lpf No files published
 ```
 
 #### Peer Operations
+
 ```
 Request:  lap
 Response: lap <peer1> <peer2> ... | lap No active peers
@@ -242,12 +273,14 @@ Response: get <ip> <port> <filename> | get ERR
 ```
 
 #### Heartbeat
+
 ```
 Request:  hbt
 Response: (no response, updates heartbeat)
 ```
 
 #### Disconnect
+
 ```
 Request:  xit
 Response: xit
@@ -276,10 +309,17 @@ bash scripts/generate_certs.sh
 
 ## Security Notes
 
-- **Development certificates**: Self-signed certificates are for development only
-- **Production**: Use proper CA-signed certificates
-- **P2P transfers**: File transfers are direct peer-to-peer (not encrypted)
-- **Credentials**: Store credentials securely in production environments
+This is a learning project built around the network programming, not a hardened system. The known
+gaps are listed here deliberately rather than left for a reader to discover:
+
+- **Passwords are stored in plaintext.** Credentials are read from a flat file and seeded verbatim
+  into SQLite. A real deployment needs per-user salted hashing (bcrypt/argon2) — the shipped
+  `credentials.example.txt` contains throwaway accounts only, and `credentials.txt` is gitignored.
+- **Development certificates**: the self-signed certificates from `generate_certs.sh` are for local
+  use only; production needs CA-signed certificates and hostname verification.
+- **TLS is opt-in, not default**: the client↔server control channel is only encrypted when the server
+  is started with `--ssl`. Direct peer-to-peer file transfers are never encrypted.
+- **No transfer integrity check**: there is no checksum on received files.
 
 ## License
 

@@ -44,3 +44,18 @@ htmlcov/
 
 # Sisyphus planning
 .sisyphus/drafts/
+
+# Agent scratch
+.sisyphus/
+.artifacts/
+
+# Local credentials (copy from credentials.example.txt)
+credentials.txt
+
+# Local database
+*.db
+
+# TLS material
+*.pem
+*.crt
+*.key
